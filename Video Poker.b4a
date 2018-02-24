@@ -1,0 +1,870 @@
+﻿Version=5.5
+NumberOfModules=1
+Module1=Starter
+Build1=Default,com.ethanuzarowski.videopoker
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~SetApplicationAttribute(android:theme, "@android:style/Theme.Holo")~\n~'End of default text.~\n~
+IconFile=
+NumberOfFiles=5
+File1=cashier.bal
+File2=game.bal
+File3=info.bal
+File4=menu.bal
+File5=settings.bal
+NumberOfLibraries=2
+Library1=core
+Library2=phone
+@EndOfDesignText@
+
+#Region  Project Attributes 
+	#ApplicationLabel: Video Poker
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: landscape
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: False
+#End Region
+
+Sub Process_Globals
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+	
+End Sub
+Sub SaveOptions
+    Dim TW As TextWriter
+    TW.Initialize(File.OpenOutput(File.DirInternal, "[file name]", False))
+    TW.WriteLine(score)
+    TW.Close
+End Sub
+Sub ReadOptions
+    If File.Exists(File.DirInternal, "[file name]") = False Then Return   
+    Dim TW As TextReader
+    TW.Initialize(File.OpenInput(File.DirInternal, "[file name]"))
+    score = TW.ReadLine
+    TW.Close
+End Sub
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	'These variables can only be accessed from this module.
+	
+	'menu
+	Dim settingsscroller As ScrollView
+	Dim menuscroller As HorizontalScrollView
+	Dim pnlJacksOrBetter As Panel
+	Dim pnlallamerican As Panel
+	Dim menuimg As ImageView
+	Dim menusettings As Panel
+	Dim menuinfo As Panel
+	Dim menucashier As Panel
+	Dim pnlscrollforgames As Panel
+	Dim pnlmoregamescomingsoon As Panel
+	
+	'game
+	Dim card1 As Panel
+	Dim card2 As Panel
+	Dim card3 As Panel
+	Dim card4 As Panel
+	Dim card5 As Panel
+	Dim paytable As Panel
+	Dim lblbet As Panel
+	Dim hold1 As Panel
+	Dim hold2 As Panel
+	Dim hold3 As Panel
+	Dim hold4 As Panel
+	Dim hold5 As Panel
+	Dim Draw As Panel
+	Dim Redraw As Panel
+	Dim lblresult As Label
+	Dim lblbalance As Label
+	Dim backbutton As Panel
+	
+	'cashier
+	Dim cashierbalance As Label
+	Dim cashierback As Panel
+	Dim cashierreup As Panel
+	
+	'info
+	Dim infoback As Panel
+	Dim infolabel As Label
+
+	'settings
+	Dim settingsback As Panel
+	Dim settingsreview As Panel
+	Dim settingsotherapps As Panel
+	Dim settingsfeedback As Panel
+	
+	'other
+	Dim card(6) As String
+	Dim cardval(6) As Int
+	Dim cardchar(6) As String
+	Dim cardsuit(6) As String
+	Dim tempstring As String
+	Dim cardpicstring As String
+	Dim currentdrawstatus As Int
+	Dim tempbetsizestring As String
+	Dim handstring As String
+	Dim hand As String
+	Dim score As Int
+	Dim betsize As Int
+	Dim strgame As String
+	Dim cardsuit1 As Int
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	'Do not forget to load the layout file created with the visual designer. For example:
+	Activity.LoadLayout("menu")
+	Dim numberOfGames As Int =2 '//NUMBER OF GAMES//
+	menuscroller.Panel.Width = menuscroller.Width * (numberOfGames+2)
+	pnlJacksOrBetter.RemoveView
+	pnlallamerican.Removeview
+	pnlscrollforgames.Removeview
+	pnlmoregamescomingsoon.RemoveView
+	menuscroller.Panel.AddView(pnlscrollforgames,((menuscroller.width/5)+menuscroller.Width * 0),(menuscroller.Height/10),(menuscroller.Width*.6),(menuscroller.height * .8))
+	menuscroller.Panel.AddView(pnlallamerican,((menuscroller.width/5)+menuscroller.Width * 2),(menuscroller.Height/10),(menuscroller.Width*.6),(menuscroller.height * .8))
+	menuscroller.Panel.AddView(pnlJacksOrBetter,((menuscroller.width/5)+menuscroller.Width * 1),(menuscroller.Height/10),(menuscroller.Width*.6),(menuscroller.height * .8))
+	menuscroller.Panel.AddView(pnlmoregamescomingsoon,((menuscroller.width/5)+menuscroller.Width * (numberOfGames+1)),(menuscroller.Height/10),(menuscroller.Width*.6),(menuscroller.height * .8))
+	betsize = 1
+score = 1000
+ReadOptions
+
+End Sub
+
+Sub Activity_Resume
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+SaveOptions
+End Sub
+
+Sub card5_Click
+	If currentdrawstatus = 1 Then
+	If hold5.Visible = True Then
+		hold5.Visible = False
+		Else
+			hold5.Visible=True
+	End If
+	End If
+End Sub
+
+Sub card4_Click
+	If currentdrawstatus = 1 Then
+		If hold4.Visible = True Then
+		hold4.Visible = False
+		Else
+			hold4.Visible=True
+	End If
+	End If
+End Sub
+
+Sub card3_Click
+	If currentdrawstatus = 1 Then
+		If hold3.Visible = True Then
+		hold3.Visible = False
+		Else
+			hold3.Visible=True
+			End If
+	End If
+End Sub
+
+Sub card2_Click
+	If currentdrawstatus = 1 Then
+		If hold2.Visible = True Then
+		hold2.Visible = False
+		Else
+			hold2.Visible=True
+	End If
+	End If
+End Sub
+
+Sub card1_Click
+	If currentdrawstatus = 1 Then
+		If hold1.Visible = True Then
+		hold1.Visible = False
+		Else
+			hold1.Visible=True
+	End If
+	End If
+End Sub
+
+Sub hold5_Click
+	If currentdrawstatus = 1 Then
+		If hold5.Visible = True Then
+		hold5.Visible = False
+		Else
+			hold5.Visible=True
+	End If
+	End If
+End Sub
+
+Sub hold4_Click
+	If currentdrawstatus = 1 Then
+		If hold4.Visible = True Then
+		hold4.Visible = False
+		Else
+			hold4.Visible=True
+	End If
+	End If
+End Sub
+
+Sub hold3_Click
+	If currentdrawstatus = 1 Then
+		If hold3.Visible = True Then
+		hold3.Visible = False
+		Else
+			hold3.Visible=True
+	End If
+	End If
+End Sub
+
+Sub hold2_Click
+	If currentdrawstatus = 1 Then
+		If hold2.Visible = True Then
+		hold2.Visible = False
+		Else
+			hold2.Visible=True
+	End If
+	End If
+End Sub
+
+Sub hold1_Click
+	If currentdrawstatus = 1 Then
+		If hold1.Visible = True Then
+		hold1.Visible = False
+		Else
+			hold1.Visible=True
+	End If
+	End If
+End Sub
+
+Sub Draw_Click
+	score = score - betsize
+	lblbalance.Text = "Balance: " & score
+	lblresult.Text=""
+	currentdrawstatus = 1
+	For i = 0 To 5
+		card(i) = ""
+	Next
+	For i = 1 To 5
+	cardval(i) = Rnd(1,14)
+	If cardval(i) =1 Then
+		cardchar(i) = "a"
+	Else If cardval(i) = 10 Then
+		cardchar(i) ="t"
+	Else If cardval(i) = 11 Then
+		cardchar(i) = "j"
+	Else If cardval(i) = 12 Then
+		cardchar(i) = "q"
+	Else If cardval(i) = 13 Then
+		cardchar(i) = "k"
+		Else
+			cardchar(i) = "" & cardval(i) & ""
+	End If
+	Next
+	For i = 1 To 5
+	cardsuit(i) = Rnd(1,5)
+	If cardsuit(i) = 1 Then
+		cardsuit(i) = "c"
+	Else If cardsuit(i) = 2 Then
+	cardsuit(i) = "d"
+	Else If cardsuit(i) = 3 Then
+	cardsuit(i) = "s"
+	Else If cardsuit(i) = 4 Then
+	cardsuit(i) = "h"
+	End If
+	Next
+	For i = 1 To 5
+		tempstring = cardchar(i) & cardsuit(i)
+	Do While ((tempstring = card(1)) Or (tempstring = card(2)) Or (tempstring = card(3)) Or (tempstring = card(4)) Or (tempstring = card(5)))
+		cardsuit(i) = Rnd(1,5)
+	If cardsuit(i) = 1 Then
+		cardsuit(i) = "c"
+	Else If cardsuit(i) = 2 Then
+	cardsuit(i) = "d"
+	Else If cardsuit(i) = 3 Then
+	cardsuit(i) = "s"
+	Else If cardsuit(i) = 4 Then
+	cardsuit(i) = "h"
+	End If
+		cardval(i) = Rnd(1,14)
+	If cardval(i) =1 Then
+		cardchar(i) = "a"
+	Else If cardval(i) = 10 Then
+		cardchar(i) ="t"
+	Else If cardval(i) = 11 Then
+		cardchar(i) = "j"
+	Else If cardval(i) = 12 Then
+		cardchar(i) = "q"
+	Else If cardval(i) = 13 Then
+		cardchar(i) = "k"
+		Else
+			cardchar(i) = "" & cardval(i) & ""
+	End If
+	tempstring = cardchar(i) & cardsuit(i)
+	Loop
+'///testers/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+'If i = 1 Then
+'	tempstring = "ac"
+'else If i = 2 Then
+'	tempstring = "2c"
+'Else If i = 3 Then
+'	tempstring = "5c"
+'Else If i = 4 Then
+'	tempstring = "3c"
+'Else If i = 5 Then
+'	tempstring = "4c"
+'End If
+	card(i) = tempstring
+	cardpicstring = tempstring & ".png"
+	If i = 1 Then
+	card1.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+	Else If i = 2 Then
+		card2.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+		Else If i = 3 Then
+		card3.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+			Else If i = 4 Then
+		card4.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+			Else If i = 5 Then
+		card5.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+	End If
+	Next
+	Draw.Visible = False
+	Redraw.Visible = True
+	SaveOptions
+End Sub
+
+Sub Redraw_Click
+	currentdrawstatus = 2
+	For i = 0 To 5
+		If (((i=1) And (hold1.Visible = False)) Or ((i=2) And (hold2.Visible = False)) Or ((i=3) And (hold3.Visible = False)) Or ((i=4) And (hold4.Visible = False)) Or ((i=5) And (hold5.Visible = False))) Then
+		card(i) = ""
+		End If
+	Next
+	For i = 1 To 5
+		If (((i=1) And (hold1.Visible = False)) Or ((i=2) And (hold2.Visible = False)) Or ((i=3) And (hold3.Visible = False)) Or ((i=4) And (hold4.Visible = False)) Or ((i=5) And (hold5.Visible = False))) Then
+	cardval(i) = Rnd(1,14)
+	If cardval(i) =1 Then
+		cardchar(i) = "a"
+	Else If cardval(i) = 10 Then
+		cardchar(i) ="t"
+	Else If cardval(i) = 11 Then
+		cardchar(i) = "j"
+	Else If cardval(i) = 12 Then
+		cardchar(i) = "q"
+	Else If cardval(i) = 13 Then
+		cardchar(i) = "k"
+		Else
+			cardchar(i) = "" & cardval(i) & ""
+	End If
+	End If
+	Next
+	For i = 1 To 5
+		If (((i=1) And (hold1.Visible = False)) Or ((i=2) And (hold2.Visible = False)) Or ((i=3) And (hold3.Visible = False)) Or ((i=4) And (hold4.Visible = False)) Or ((i=5) And (hold5.Visible = False))) Then
+	cardsuit1 = Rnd(1,5)
+	If cardsuit1 = 1 Then
+		cardsuit(i) = "c"
+	Else If cardsuit1 = 2 Then
+	cardsuit(i) = "d"
+	Else If cardsuit1 = 3 Then
+	cardsuit(i) = "s"
+	Else If cardsuit1 = 4 Then
+	cardsuit(i) = "h"
+	End If
+	End If
+	Next
+	For i = 1 To 5
+		If (((i=1) And (hold1.Visible = False)) Or ((i=2) And (hold2.Visible = False)) Or ((i=3) And (hold3.Visible = False)) Or ((i=4) And (hold4.Visible = False)) Or ((i=5) And (hold5.Visible = False))) Then
+		tempstring = cardchar(i) & cardsuit(i)
+	Do While ((tempstring = card(1)) Or (tempstring = card(2)) Or (tempstring = card(3)) Or (tempstring = card(4)) Or (tempstring = card(5)))
+		cardsuit1 = Rnd(1,5)
+	If cardsuit1 = 1 Then
+		cardsuit(i) = "c"
+	Else If cardsuit1 =2 Then
+	cardsuit(i) = "d"
+	Else If cardsuit1 = 3 Then
+	cardsuit(i) = "s"
+	Else If cardsuit1 = 4 Then
+	cardsuit(i) = "h"
+	End If
+		cardval(i) = Rnd(1,14)
+	If cardval(i) =1 Then
+		cardchar(i) = "a"
+	Else If cardval(i) = 10 Then
+		cardchar(i) ="t"
+	Else If cardval(i) = 11 Then
+		cardchar(i) = "j"
+	Else If cardval(i) = 12 Then
+		cardchar(i) = "q"
+	Else If cardval(i) = 13 Then
+		cardchar(i) = "k"
+		Else
+			cardchar(i) = "" & cardval(i) & ""
+	End If
+	tempstring = cardchar(i) & cardsuit(i)
+	Loop
+	card(i) = tempstring
+	cardpicstring = tempstring & ".png"
+	If i = 1 Then
+	card1.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+	Else If i = 2 Then
+		card2.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+		Else If i = 3 Then
+		card3.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+			Else If i = 4 Then
+		card4.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+			Else If i = 5 Then
+		card5.SetBackgroundImage(LoadBitmap(File.DirAssets,cardpicstring))
+	End If
+	End If
+	Next
+	hold1.Visible = False
+	hold2.Visible = False
+	hold3.Visible = False
+	hold4.Visible = False
+	hold5.Visible = False
+	Redraw.Visible = False
+	Draw.Visible = True
+	handstring = card(1) & " " & card(2) & " " & card(3) & " " & card(4) & " " & card(5)
+	hand = returnhand1(strgame,handstring)
+	lblresult.Text = hand & " +"&returnPoints1(hand,betsize,strgame)
+	score = score + returnPoints1(hand,betsize,strgame)
+	lblbalance.Text = "Balance: " & score
+	SaveOptions
+	End Sub
+Sub returnhand1(a As String, b As String) As String
+	If (a="jacksorbetter") Then
+		Return returnHandJacksOrBetter(b)
+	else If (a = "allamerican") Then
+		Return returnHandAllAmerican(b)
+	End If
+	Return ""
+End Sub
+Sub returnPoints1(a As String, b As Int, h As String) As Int
+	If (h="jacksorbetter") Then
+		Return returnPointsJacksOrBetter(a,b)
+	else If (h = "allamerican") Then
+		Return returnPointsAllAmerican(a,b)
+	End If
+	Return -1
+End Sub
+Sub paytable_Click
+	If currentdrawstatus <> 1 Then
+	If betsize < 5 Then
+	betsize = betsize + 1
+	Else If betsize = 5 Then
+		betsize = 1
+	Else
+		Msgbox("Error in bet size, please close app and restart.", "Error")
+		End If
+		tempbetsizestring = strgame & "paytable" & betsize & ".png"
+	paytable.SetBackgroundImage(LoadBitmap(File.DirAssets,tempbetsizestring))
+	End If
+	lblbet.SetBackgroundImage(LoadBitmap(File.DirAssets,("bs" & betsize & ".png")))
+End Sub
+
+Sub lblbet_Click
+	If currentdrawstatus <> 1 Then
+		If betsize < 5 Then
+	betsize = betsize + 1
+	Else If betsize = 5 Then
+		betsize = 1
+	Else
+		Msgbox("Error in bet size, please close app and restart.", "Error")
+		End If
+		tempbetsizestring = strgame & "paytable" & betsize & ".png"
+	paytable.SetBackgroundImage(LoadBitmap(File.DirAssets,tempbetsizestring))
+	End If
+	lblbet.SetBackgroundImage(LoadBitmap(File.DirAssets,("bs" & betsize & ".png")))
+End Sub
+
+Public Sub CountChar(searchMe As String, findMe As Char) As Int
+
+    If Not(searchMe.Contains(findMe)) Then Return 0
+
+    Dim CountMe As Int = 0
+
+    For x = 0 To searchMe.Length - 1
+        If searchMe.CharAt(x) = findMe Then
+            CountMe = CountMe + 1
+        End If
+    Next
+
+    Return CountMe
+
+End Sub
+Public Sub returnHandJacksOrBetter(hand1 As String) As String
+	Dim flush As Boolean
+	Dim straight As Int
+	Dim fourofakind As Boolean
+	Dim threeofakind As Boolean
+	Dim pairs As Int
+	pairs = 0
+	straight = 0
+	Dim ii As Char
+	If ((CountChar(hand1,"c")) = 5 Or (CountChar(hand1,"h")) = 5 Or (CountChar(hand1,"d")) = 5 Or (CountChar(hand1,"s")) = 5) Then
+	flush = True
+	End If
+	straight = isStraight(hand1)
+	If straight = -1 Then
+		Msgbox("Unknown error, please close app and restart.","Error")
+	End If
+			For i = 1 To 13
+		If i = 1 Then
+			ii = "a"
+		else if i = 10 Then
+			ii = "t"
+		else if i = 11 Then
+			ii = "j"
+		else if i = 12 Then
+			ii = "q"
+		else if i = 13 Then
+			ii = "k"
+		Else
+			ii = i
+		End If
+		If (CountChar(hand1,ii) = 4) Then
+			fourofakind = True
+		Else if (CountChar(hand1,ii) = 3) Then
+			threeofakind = True
+			else if (CountChar(hand1,ii) = 2) Then
+				pairs = pairs + 1
+		End If
+			Next
+			If ((straight = 2) And (flush = True)) Then
+			Return "Royal Flush"
+			else if ((straight = 1) And (flush = True)) Then
+				Return "Straight Flush"
+				else If (fourofakind = True) Then
+					Return "Four of a Kind"
+				else if ((threeofakind = True) And (pairs>0)) Then
+					Return "Full House"
+				Else If flush = True Then
+					Return "Flush"
+				else if (straight >0) Then
+					Return "Straight"
+					Else If (threeofakind = True) Then
+						Return "Three of a Kind"
+					else If (pairs>1) Then
+						Return "Two Pair"
+			else If ((CountChar(hand1,"a") = 2 )Or  (CountChar(hand1,"k") = 2 ) Or (CountChar(hand1,"q") = 2 ) Or (CountChar(hand1,"j") = 2 )) Then
+				Return "Jacks or Better"
+				Else
+					Return "Try again"
+					End If
+
+End Sub
+Public Sub returnHandAllAmerican(hand1 As String) As String
+	Dim flush As Boolean
+	Dim straight As Int
+	Dim fourofakind As Boolean
+	Dim threeofakind As Boolean
+	Dim pairs As Int
+	pairs = 0
+	straight = 0
+	Dim ii As Char
+	If ((CountChar(hand1,"c")) = 5 Or (CountChar(hand1,"h")) = 5 Or (CountChar(hand1,"d")) = 5 Or (CountChar(hand1,"s")) = 5) Then
+	flush = True
+	End If
+	straight = isStraight(hand1)
+	If straight = -1 Then
+		Msgbox("Unknown error, please close app and restart.","Error")
+	End If
+			For i = 1 To 13
+		If i = 1 Then
+			ii = "a"
+		else if i = 10 Then
+			ii = "t"
+		else if i = 11 Then
+			ii = "j"
+		else if i = 12 Then
+			ii = "q"
+		else if i = 13 Then
+			ii = "k"
+		Else
+			ii = i
+		End If
+		If (CountChar(hand1,ii) = 4) Then
+			fourofakind = True
+		Else if (CountChar(hand1,ii) = 3) Then
+			threeofakind = True
+			else if (CountChar(hand1,ii) = 2) Then
+				pairs = pairs + 1
+		End If
+			Next
+			If ((straight = 2) And (flush = True)) Then
+			Return "Royal Flush"
+			else if ((straight = 1) And (flush = True)) Then
+				Return "Straight Flush"
+				else If (fourofakind = True) Then
+					Return "Four of a Kind"
+				else if ((threeofakind = True) And (pairs>0)) Then
+					Return "Full House"
+				Else If flush = True Then
+					Return "Flush"
+				else if (straight >0) Then
+					Return "Straight"
+					Else If (threeofakind = True) Then
+						Return "Three of a Kind"
+					else If (pairs>1) Then
+						Return "Two Pair"
+			else If ((CountChar(hand1,"a") = 2 )Or  (CountChar(hand1,"k") = 2 ) Or (CountChar(hand1,"q") = 2 ) Or (CountChar(hand1,"j") = 2 )) Then
+				Return "Jacks or Better"
+				Else
+					Return "Try again"
+					End If
+
+End Sub
+Public Sub isStraight(hand1 As String) As Int
+Dim b As Boolean
+b= False
+For i = 1 To 10
+	If (((CountChar(hand1,(intchar(i)))) = 1) And ((CountChar(hand1,(intchar(i+1)))) = 1) And ((CountChar(hand1,(intchar(i+2)))) = 1) And ((CountChar(hand1,(intchar(i+3)))) = 1) And ((CountChar(hand1,(intchar(i+4)))) = 1)) Then
+		If ((CountChar(hand1,"a") > 0) And (CountChar(hand1,"k") > 0)) Then
+			b = True
+			Return 2
+			Exit
+		Else
+			b= True
+			Return 1
+			Exit
+	End If
+End If
+Next
+If b = True Then
+	Else
+Return 0
+End If
+Return -1
+End Sub
+Public Sub intchar(i As Int) As Char
+	Dim g As Char
+	If i = 1 Then
+	Return "a"
+	else if i = 10 Then
+		Return "t"
+	else if i = 11 Then
+		Return "j"
+	else if i = 12 Then
+		Return "q"
+	else if i = 13 Then
+		Return "k"
+	else if i = 14 Then
+		Return "a"
+	Else
+		g = i
+		Return g
+	End If
+End Sub
+Public Sub returnPointsJacksOrBetter(a As String, b As Int) As Int
+	If a="Royal Flush" Then
+		If b = 5 Then
+			Return 4000
+		Else
+		Return 250
+		End If
+	Else If a = "Straight Flush" Then
+		Return (b*50)
+	Else If a = "Four of a Kind" Then
+		Return (25*b)
+	Else If a = "Full House" Then
+		Return (9*b)
+	Else If a = "Flush" Then
+		Return (6 * b)
+	Else If a = "Straight" Then
+		Return (b*4)
+	Else If a = "Three of a Kind" Then
+		Return (3*b)
+	Else If a = "Two Pair" Then
+		Return (2 *b)
+	Else If a = "Jacks or Better" Then
+		Return (1 * b)
+	Else If a = "Try again" Then
+		Return 0
+	End If
+	Return 0
+End Sub
+Public Sub returnPointsAllAmerican(a As String, b As Int) As Int
+	If a="Royal Flush" Then
+		If b = 5 Then
+			Return 4000
+		Else
+		Return (250*b)
+		End If
+	Else If a = "Straight Flush" Then
+		Return (b*200)
+	Else If a = "Four of a Kind" Then
+		Return (35*b)
+	Else If a = "Full House" Then
+		Return (8*b)
+	Else If a = "Flush" Then
+		Return (8 * b)
+	Else If a = "Straight" Then
+		Return (8*b)
+	Else If a = "Three of a Kind" Then
+		Return (3*b)
+	Else If a = "Two Pair" Then
+		Return (1 *b)
+	Else If a = "Jacks or Better" Then
+		Return (1 * b)
+	Else If a = "Try again" Then
+		Return 0
+	End If
+	Return 0
+End Sub
+
+Sub pnlJacksOrBetter_Click
+	strgame = "jacksorbetter"
+	menucashier.Visible = False
+	menuimg.Visible = False
+	menuinfo.Visible = False
+	menuscroller.Visible = False
+	menusettings.Visible = False
+	pnlallamerican.Visible = False
+	pnlJacksOrBetter.Visible = False
+	Activity.LoadLayout("game")
+
+	tempbetsizestring = strgame & "paytable" & betsize & ".png"
+	paytable.SetBackgroundImage(LoadBitmap(File.DirAssets,tempbetsizestring))
+	paytable.Visible = True
+	lblbalance.Text = "Balance: " & score
+	
+End Sub
+
+Sub backbutton_Click
+	If (currentdrawstatus<>1) Then
+	card1.Visible = False
+	card2.Visible = False
+	card3.Visible = False
+	card4.Visible = False
+	card5.Visible = False
+	paytable.Visible = False
+	lblbet.Visible = False
+	hold1.Visible = False
+	hold2.Visible = False
+	hold3.Visible = False
+	hold4.Visible = False
+	hold5.Visible = False
+	Draw.Visible = False
+	Redraw.Visible =False
+	lblresult.Visible = False
+	lblbalance.Visible = False
+	backbutton.Visible = False
+	Activity_Create(False)
+
+End If
+End Sub
+Sub pnlAllAmerican_Click
+	strgame = "allamerican"
+	menucashier.Visible = False
+	menuimg.Visible = False
+	menuinfo.Visible = False
+	menuscroller.Visible = False
+	menusettings.Visible = False
+	pnlallamerican.Visible = False
+	pnlJacksOrBetter.Visible = False
+	Activity.LoadLayout("game")
+
+	tempbetsizestring = strgame & "paytable" & betsize & ".png"
+	paytable.SetBackgroundImage(LoadBitmap(File.DirAssets,tempbetsizestring))
+	paytable.Visible = True
+	lblbalance.Text = "Balance: " & score
+	End Sub
+
+Sub menusettings_Click
+	Dim settingsreviewtop As Int
+	Dim settingsfeedbacktop As Int
+	Dim settingsotherappstop As Int
+	Dim settingsreviewheight As Int
+	Dim settingsfeedbackheight As Int
+	Dim settingsotherappsheight As Int
+	menucashier.Visible = False
+	menuimg.Visible = False
+	menuinfo.Visible = False
+	menuscroller.Visible = False
+	menusettings.Visible = False
+	pnlallamerican.Visible = False
+	pnlJacksOrBetter.Visible = False
+	Activity.LoadLayout("settings")
+	Dim numberOfSettingsButtons As Int =3 '//NUMBER OF SETTINGS//
+	settingsscroller.Panel.Height = settingsscroller.Height * ((1/3) * numberOfSettingsButtons)
+	settingsfeedback.RemoveView
+	settingsreview.RemoveView
+	settingsotherapps.RemoveView 'ltwh
+	'settingsscroller.Color = Colors.Green
+	settingsreviewtop=(.05*settingsscroller.Height)
+	settingsreviewheight=(.25*settingsscroller.Height)
+	settingsotherappstop = settingsreviewtop+settingsreviewheight+(.075*settingsscroller.Height)
+	settingsotherappsheight = (.25*settingsscroller.Height)
+	settingsfeedbacktop = settingsotherappstop+settingsotherappsheight+(.075*settingsscroller.Height)
+	settingsfeedbackheight =(.25*settingsscroller.Height)
+	settingsscroller.Panel.AddView(settingsreview, (.1*settingsscroller.Width),settingsreviewtop,(.8*settingsscroller.Width),settingsreviewheight)
+	settingsscroller.Panel.AddView(settingsotherapps, (.1*settingsscroller.Width),settingsotherappstop,(.8*settingsscroller.Width),settingsotherappsheight)
+	settingsscroller.Panel.AddView(settingsfeedback, (.1*settingsscroller.Width),settingsfeedbacktop,(.8*settingsscroller.Width),settingsfeedbackheight)
+End Sub
+
+Sub menuinfo_Click
+	menucashier.Visible = False
+	menuimg.Visible = False
+	menuinfo.Visible = False
+	menuscroller.Visible = False
+	menusettings.Visible = False
+	pnlallamerican.Visible = False
+	pnlJacksOrBetter.Visible = False
+	Activity.LoadLayout("info")
+End Sub
+
+Sub menucashier_Click
+	menucashier.Visible = False
+	menuimg.Visible = False
+	menuinfo.Visible = False
+	menuscroller.Visible = False
+	menusettings.Visible = False
+	pnlallamerican.Visible = False
+	pnlJacksOrBetter.Visible = False
+	Activity.LoadLayout("cashier")
+	cashierbalance.Text = "Balance: " & score
+End Sub
+Sub infoback_Click
+	infoback.Visible =False
+	infolabel.Visible = False
+	Activity_Create(False)
+End Sub
+Sub settingsback_Click
+	settingsscroller.Visible=False
+	settingsback.Visible =False
+	Activity_Create(False)
+End Sub
+Sub settingsfeedback_Click
+Dim Message As Email
+Message.To.Add("ethanuzarowskiapps@gmail.com")
+Message.Subject="Ultimate Video Poker Feedback"
+StartActivity(Message.GetIntent) 
+End Sub
+Sub settingsreview_Click
+Private GooglePlay As Intent
+        
+GooglePlay.Initialize(GooglePlay.ACTION_VIEW, "market://details?id=com.ethanuzarowski.videopoker") '"com.ethanuzarowski.videopoker" instead of "com.shazam.android"
+        
+StartActivity(GooglePlay)
+End Sub
+Sub settingsotherapps_Click
+Dim otherappsintent As Intent
+otherappsintent.Initialize(otherappsintent.ACTION_VIEW, "market://search?q=Ethan Uzarowski".Replace("~", QUOTE)) '"Ethan Uzarowski" instead of "Pinger"
+StartActivity(otherappsintent)
+End Sub
+Sub cashierback_Click
+	Activity_Create(False)
+End Sub
+Sub cashierreup_Click
+	If score < 1000 Then
+		score = 1000
+	cashierbalance.Text = "Balance: " & score
+	Msgbox("Your balance has been increased to 1000","Balance Refreshed")
+	Else
+		Msgbox("Your balance must be below 1000 to refresh","Balance Not Refreshed")
+	End If
+	SaveOptions
+End Sub
